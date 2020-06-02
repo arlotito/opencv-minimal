@@ -58,7 +58,7 @@ RUN echo -e '@edgunity http://nl.alpinelinux.org/alpine/edge/community\n\
   && cmake \
     -D CMAKE_BUILD_TYPE=RELEASE \
     -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D WITH_AVX=NO \
+    -D WITH_AVX=YES \
     -D WITH_FFMPEG=NO \
     -D WITH_IPP=NO \
     -D WITH_OPENEXR=NO \

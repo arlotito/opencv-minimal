@@ -1,5 +1,7 @@
 #from https://github.com/denismakogon/opencv-slim/blob/master/Dockerfile
-FROM python:3.6.8-slim-stretch
+#FROM python:3.6.8-slim-stretch
+FROM python:3.7.3-slim-stretch
+
 #FROM python:3.6.8-slim-jessie
 
 #NOTE: usare env per i parametri e' figo ma ti sembra di aver capito che invalida la cache!
@@ -17,7 +19,6 @@ FROM python:3.6.8-slim-stretch
 #layer
 RUN apt-get update \
     && apt-get install --no-install-recommends -qy build-essential \
-                                                cmake \
                                                 gcc \
                                                 git \
                                                 wget \
@@ -43,9 +44,45 @@ RUN apt-get update \
     && rm -fr /tmp/lib* \
     && pip install --upgrade pip \
     && pip install numpy \
-    && apt-get install --no-install-recommends -qy openssh-server
+  
+  #cmake
+    && wget https://github.com/Kitware/CMake/releases/download/v3.14.1/cmake-3.14.1-Linux-x86_64.sh \
+    && chmod +x cmake-3.14.1-Linux-x86_64.sh \
+    && ./cmake-3.14.1-Linux-x86_64.sh --skip-license \
+ 
+#layer: opencv
+    && wget https://github.com/opencv/opencv/archive/4.0.1.zip \
+    && unzip 4.0.1.zip \
+    && mkdir /opencv-4.0.1/cmake_binary \
+    && cd /opencv-4.0.1/cmake_binary \
+    && cmake -DBUILD_TIFF=ON \
+      -DBUILD_opencv_java=OFF \
+      -DWITH_CUDA=OFF \
+      -DENABLE_AVX=ON \
+#      -DENABLE_AVX=OFF \
+      -DWITH_OPENGL=ON \
+      -DWITH_OPENCL=ON \
+      -DWITH_IPP=ON \
+      -DWITH_TBB=ON \
+      -DWITH_EIGEN=ON \
+      -DWITH_V4L=ON \
+      -DBUILD_TESTS=OFF \
+      -DBUILD_PERF_TESTS=OFF \
+      -DCMAKE_BUILD_TYPE=RELEASE \
+      -DCMAKE_INSTALL_PREFIX=$(python3.7 -c "import sys; print(sys.prefix)") \
+      -DPYTHON_EXECUTABLE=$(which python3.7) \
+      -DPYTHON_INCLUDE_DIR=$(python3.7 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+      -DPYTHON_PACKAGES_PATH=$(python3.7 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+      .. \
+    && make \
+    && make install \
+    && rm /4.0.1.zip \
+    && rm -r /opencv-4.0.1 \
+    && ldconfig \
 
- RUN apt-get remove --purge --auto-remove -y build-essential \
+      
+      && apt-get remove --purge --auto-remove -y \
+                                                build-essential \
                                                 cmake \
                                                 gcc \
                                                 git \
@@ -71,4 +108,4 @@ RUN apt-get update \
       && rm -f /var/cache/apt/*.bin \
       && rm -rf /root/.[acpw]*
 
-ENTRYPOINT "bash"
+#ENTRYPOINT "bash"

@@ -42,9 +42,39 @@ RUN apt-get update \
     && dpkg -i /tmp/libjasper-dev_1.900.1-debian1-2.4ubuntu1.1_amd64.deb \
     && rm -fr /tmp/lib* \
     && pip install --upgrade pip \
-    && pip install numpy \
-    && apt-get install --no-install-recommends -qy openssh-server
+    && pip install numpy 
+ 
+#layer: opencv
+RUN wget https://github.com/opencv/opencv/archive/4.0.1.zip \
+    && unzip 4.0.1.zip \
+    && mkdir /opencv-4.0.1/cmake_binary \
+    && cd /opencv-4.0.1/cmake_binary \
+    && cmake -DBUILD_TIFF=ON \
+      -DBUILD_opencv_java=OFF \
+      -DWITH_CUDA=OFF \
+#      -DENABLE_AVX=ON \
+      -DENABLE_AVX=OFF \
+      -DWITH_OPENGL=ON \
+      -DWITH_OPENCL=ON \
+      -DWITH_IPP=ON \
+      -DWITH_TBB=ON \
+      -DWITH_EIGEN=ON \
+      -DWITH_V4L=ON \
+      -DBUILD_TESTS=OFF \
+      -DBUILD_PERF_TESTS=OFF \
+      -DCMAKE_BUILD_TYPE=RELEASE \
+      -DCMAKE_INSTALL_PREFIX=$(python3.6 -c "import sys; print(sys.prefix)") \
+      -DPYTHON_EXECUTABLE=$(which python3.6) \
+      -DPYTHON_INCLUDE_DIR=$(python3.6 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+      -DPYTHON_PACKAGES_PATH=$(python3.6 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+      .. \
+    && make \
+    && make install \
+    && rm /4.0.1.zip \
+    && rm -r /opencv-4.0.1 \
+    && ldconfig 
 
+      
  RUN apt-get remove --purge --auto-remove -y build-essential \
                                                 cmake \
                                                 gcc \
