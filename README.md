@@ -10,7 +10,7 @@ Some trials looking for a compact Python & OpenCV docker
   ?  | debian stretch slim / Python 3.6.8 / OpenCV 4.0.1  | 481MB                | 167MB            |
   ?  | debian stretch slim / Python 3.6.8 / OpenCV 4.0.1  | 738MB                | 259MB            |
   ?  | debian stretch slim / Python 3.6.8 / OpenCV 3.4.5  | ?                    | ?                |
-  arturol76/opencv-minimal:py3.7-opencv4.5.3 | debian stretch slim / Python 3.7.11 / OpenCV 4.5.3 |                | 205.53MB         |
+  arturol76/myopencv-minimal:py3.7-opencv4.5.3 | debian stretch slim / Python 3.7.11 / OpenCV 4.5.3 |                | 205.53MB         |
 
 ## Test:
 
